@@ -108,7 +108,7 @@ export default function BrowsePage() {
                   <CardHeader>
                     <CardTitle className="flex justify-between items-start gap-2">
                       <span>{prompt.title}</span>
-                      <Badge variant="secondary">{prompt.category}</Badge>
+                      <Badge className="flex" variant="secondary">{prompt.category}</Badge>
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
                       {prompt.description.slice(0, 129)}...
