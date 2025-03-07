@@ -29,7 +29,7 @@ export default function ProfilePage() {
                 <span className="text-muted-foreground"> 50 Reviews</span>
               </div>
             </div>
-            <Button>Edit Profile</Button>
+            <Button className="rounded-full">Edit Profile</Button>
           </div>
 
           <Tabs defaultValue="activity">
@@ -56,14 +56,14 @@ export default function ProfilePage() {
                           <p className="font-medium">Purchased "SEO Content Optimizer"</p>
                           <p className="text-sm text-muted-foreground">2 days ago</p>
                         </div>
-                        <Badge>0.08 ETH</Badge>
+                        <Badge className="text-white">0.08 ETH</Badge>
                       </div>
                       <div className="flex justify-between items-center py-2 border-b">
                         <div>
                           <p className="font-medium">Sold "Creative Story Generator"</p>
                           <p className="text-sm text-muted-foreground">5 days ago</p>
                         </div>
-                        <Badge>0.1 ETH</Badge>
+                        <Badge className="text-white">0.1 ETH</Badge>
                       </div>
                     </div>
                   </CardContent>

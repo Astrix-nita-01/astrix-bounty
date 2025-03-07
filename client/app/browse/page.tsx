@@ -95,7 +95,9 @@ export default function BrowsePage() {
                 </option>
               ))}
             </select>
-            <Button onClick={handleSearch}>Search</Button>
+            <Button className="rounded-full" onClick={handleSearch}>
+              Search
+            </Button>
           </div>
 
           {/* Prompts Grid */}
@@ -106,9 +108,11 @@ export default function BrowsePage() {
                   <CardHeader>
                     <CardTitle className="flex justify-between items-start gap-2">
                       <span>{prompt.title}</span>
-                      <Badge variant="secondary">{prompt.category}</Badge>
+                      <Badge className="flex" variant="secondary">{prompt.category}</Badge>
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">{prompt.description.slice(0, 129)}...</p>
+                    <p className="text-sm text-muted-foreground">
+                      {prompt.description.slice(0, 129)}...
+                    </p>
                   </CardHeader>
                   <CardContent className="flex-1">
                     <div className="flex items-center gap-2">
@@ -117,13 +121,19 @@ export default function BrowsePage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between items-center">
-                    <span className="text-lg font-bold">{prompt.price} ETH</span>
-                    <Button onClick={() => setSelectedPrompt(prompt)}>View Details</Button>
+                    <span className="text-lg font-bold">
+                      {prompt.price} ETH
+                    </span>
+                    <Button className="rounded-full" onClick={() => setSelectedPrompt(prompt)}>
+                      View Details
+                    </Button>
                   </CardFooter>
                 </Card>
               ))
             ) : (
-              <p className="text-gray-500 text-center col-span-full">No results found.</p>
+              <p className="text-gray-500 text-center col-span-full">
+                No results found.
+              </p>
             )}
           </div>
         </div>
@@ -151,11 +161,17 @@ export default function BrowsePage() {
 
             <div className="grid grid-cols-2 gap-6 mt-6">
               <div>
-                <p><strong>Category:</strong> {selectedPrompt.category}</p>
+                <p>
+                  <strong>Category:</strong> {selectedPrompt.category}
+                </p>
               </div>
               <div>
-                <p><strong>Rating:</strong> {selectedPrompt.rating} ⭐</p>
-                <p><strong>Price:</strong> {selectedPrompt.price} ETH</p>
+                <p>
+                  <strong>Rating:</strong> {selectedPrompt.rating} ⭐
+                </p>
+                <p>
+                  <strong>Price:</strong> {selectedPrompt.price} ETH
+                </p>
               </div>
             </div>
 

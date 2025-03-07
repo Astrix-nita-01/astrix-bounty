@@ -19,13 +19,13 @@ const ConnectButton: React.FC = () => {
     <div className="relative inline-block text-left">
       {isConnected ? (
         <div>
-          <Button variant="default" onClick={() => setDropdownOpen(!dropdownOpen)}>
+          <Button className="rounded-full" variant="default" onClick={() => setDropdownOpen(!dropdownOpen)}>
             {account} ▼
           </Button>
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
               <button
-                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                className="block w-full px-4 py-2 rounded-md text-left text-sm text-gray-700 hover:bg-gray-100"
                 onClick={disconnectWallet}
               >
                 Disconnect
@@ -35,7 +35,7 @@ const ConnectButton: React.FC = () => {
           )}
         </div>
       ) : (
-        <Button variant="default" onClick={connectWallet}>Connect Hive Wallet</Button>
+        <Button className="rounded-full" variant="default" onClick={connectWallet}>Connect Hive Wallet</Button>
       )}
     </div>
   );
@@ -70,7 +70,7 @@ const TransactionExample: React.FC = () => {
 
   return (
     <div>
-      <button onClick={handleCustomJson} disabled={!isConnected}>
+      <button  onClick={handleCustomJson} disabled={!isConnected}>
         Send Test Transaction
       </button>
       {transactionLog && (

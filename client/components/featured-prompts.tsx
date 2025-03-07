@@ -72,7 +72,7 @@ export function FeaturedPrompts() {
               </CardContent>
               <CardFooter className="flex justify-between items-center">
                 <span className="text-lg font-bold">{prompt.price}</span>
-                <Button>Buy Now</Button>
+                <Button className="rounded-full">Buy Now</Button>
               </CardFooter>
             </Card>
           ))}
