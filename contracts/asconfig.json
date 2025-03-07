@@ -1,0 +1,15 @@
+{
+  "targets": {
+    "debug": {
+      "outFile": "build/debug.wasm",
+      "textFile": "build/debug.wat",
+      "sourceMap": true,
+      "debug": true,
+      "importMemory": true,
+      "noExportMemory": true,
+      "exportRuntime": true,
+      "bindings": "raw",
+      "transform": ["@vsc.eco/contract-testing-utils/debugTransform"]
+    }
+  }
+}

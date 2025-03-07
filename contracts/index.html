@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+</head>
+
+<body>
+    <div id="mocha"></div>
+
+    <!-- <script src="https://unpkg.com/mocha/mocha.js"></script>
+
+    <script type="module">
+        import * as chai from 'https://unpkg.com/chai/chai.js';
+      for (const [key, value] of Object.entries(chai)) {
+        window[key] = value;
+      }
+    </script>
+
+    <script class="mocha-init">
+        mocha.setup('bdd');
+        mocha.checkLeaks();
+    </script> -->
+    <script type="module" src="tests/debug.ts"></script>
+    <!-- <script class="mocha-exec">
+        // debugger;
+        mocha.run((...args) => console.log(args));
+    </script> -->
+</body>
+
+</html>
