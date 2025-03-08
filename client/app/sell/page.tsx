@@ -36,7 +36,7 @@ export default function SellPage() {
         {
           from: account,
           to: "cyph37",
-          amount: "1.000",
+          amount: `${price}`,
           memo: "Payment for service submission",
         },
       ];
@@ -45,7 +45,7 @@ export default function SellPage() {
       const result = await signTransaction(operation, "Active");
       console.log("Transaction successful:", result);
       setShowPaymentOverlay(false);
-      alert("Payment of 1.000 HIVE to cyph37 completed successfully!");
+      alert(`Payment of ${price} HIVE to cyph37 completed successfully!`);
     } catch (err: any) {
       console.error("Transaction failed:", err.message);
       alert("Transaction failed: " + err.message);
@@ -144,7 +144,7 @@ export default function SellPage() {
             <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", marginBottom: "1rem" }}>
               Complete Your Payment
             </h2>
-            <p>Pay 1.000 HIVE to submit your service.</p>
+            <p>Pay {price} HIVE to submit your service.</p>
             <button
               onClick={handlePay}
               style={{
@@ -159,7 +159,7 @@ export default function SellPage() {
               onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#45a049")}
               onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#4CAF50")}
             >
-              Pay 1.000 HIVE
+              Pay {price} HIVE
             </button>
             <button
               onClick={() => setShowPaymentOverlay(false)}
