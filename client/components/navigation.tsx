@@ -1,81 +1,93 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Search, Wallet } from "lucide-react"
-import Link from "next/link"
-import { useState } from "react"
-import ConnectWallet from "./ConnectButton"
+import React, { useEffect, useState, useRef } from "react";
+import Link from "next/link";
+import { WalletConnectButton } from "@/wallet/HIveKeychainAdapter";
+import { useHiveWallet } from "@/wallet/HIveKeychainAdapter";
 
 export function Navigation() {
-  const [isConnected, setIsConnected] = useState(false)
+  const [isClient, setIsClient] = useState(false);
+  const { isConnected, account, disconnectWallet } = useHiveWallet();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!isClient) {
+    return null; // Prevents hydration mismatch
+  }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span className="hidden font-bold sm:inline-block">Astrix-Bounty</span>
+    <nav className="bg-white shadow-md p-4">
+      <div className="container mx-auto flex justify-between items-center">
+        {/* Navigation Links */}
+        <div className="flex items-center space-x-6 text-gray-800 text-lg font-semibold">
+          <Link href="/" className="hover:text-gray-500 transition duration-300">
+            Astrix-Bounty
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
-              Browse
-            </Link>
-            <Link href="/sell" className="transition-colors hover:text-foreground/80 text-foreground">
-              Hire
-            </Link>
-            <Link href="/governance" className="transition-colors hover:text-foreground/80 text-foreground">
-              Review
-            </Link>
-            <Link href="/profile" className="transition-colors hover:text-foreground/80 text-foreground">
-              Profile
-            </Link>
-          </nav>
+          <Link href="/browse" className="hover:text-gray-500 transition duration-300">
+            Browse
+          </Link>
+          <Link href="/sell" className="hover:text-gray-500 transition duration-300">
+            Hire
+          </Link>
+          <Link href="/governance" className="hover:text-gray-500 transition duration-300">
+            Review
+          </Link>
+          <Link href="/profile" className="hover:text-gray-500 transition duration-300">
+            Profile
+          </Link>
         </div>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
-            >
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="pr-0">
-            <nav className="grid gap-6 px-2 py-6">
-              <Link href="/browse" className="hover:text-foreground/80">
-                Browse
-              </Link>
-              <Link href="/sell" className="hover:text-foreground/80">
-                Sell
-              </Link>
-              <Link href="/governance" className="hover:text-foreground/80">
-                Governance
-              </Link>
-              <Link href="/profile" className="hover:text-foreground/80">
-                Profile
-              </Link>
-            </nav>
-          </SheetContent>
-        </Sheet>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search prompts..." className="pl-8 md:w-[300px] lg:w-[400px]" />
-            </div>
-          </div>
-          {/* <Button variant="outline" className="ml-auto hidden md:flex" onClick={() => setIsConnected(!isConnected)}>
-            <Wallet className="mr-2 h-4 w-4" />
-            {isConnected ? "0x1234...5678" : "Connect Wallet"}
-          </Button> */}
 
-          <ConnectWallet/>
+        {/* Search Bar and Wallet Button */}
+        <div className="flex items-center space-x-4">
+          <input
+            type="text"
+            placeholder="Search prompts..."
+            className="p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-300"
+          />
+
+          {/* Wallet Button & Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            {isConnected ? (
+              <div>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="px-4 py-2 bg-gray-100 text-gray-800 font-medium rounded-full shadow-md hover:bg-gray-200 transition flex items-center"
+                >
+                  {account} ▼
+                </button>
+
+                {showDropdown && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                    <button
+                      onClick={disconnectWallet}
+                      className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 transition"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <WalletConnectButton />
+            )}
+          </div>
         </div>
       </div>
-    </header>
-  )
+    </nav>
+  );
 }
-
