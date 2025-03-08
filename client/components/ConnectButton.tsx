@@ -1,14 +1,15 @@
 // src/App.tsx
+"use client"
 
 import React, { useState } from 'react';
 import { HiveWalletProvider, useHiveWallet } from '@/wallet/HIveKeychainAdapter';
 import { Button } from '@/components/ui/button';
 
-interface TransactionLog {
-  status: "success" | "failed";
-  details: string | Record<string, any>;
-  timestamp: number;
-}
+// interface TransactionLog {
+//   status: "success" | "failed";
+//   details: string | Record<string, any>;
+//   timestamp: number;
+// }
 
 
 const ConnectButton: React.FC = () => {
@@ -48,7 +49,7 @@ const TransactionExample: React.FC = () => {
     if (!isConnected || !account) return;
 
     try {
-      const operation: [string, any] = [
+      const operation: [string, unknown] = [
         "custom_json",
         {
           required_auths: [],
@@ -60,12 +61,17 @@ const TransactionExample: React.FC = () => {
           }),
         },
       ];
-
+    
       const result = await signTransaction(operation, "Posting");
       console.log("Transaction successful:", result);
-    } catch (err) {
-      console.error("Transaction failed:", (err as Error).message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Transaction failed:", err.message);
+      } else {
+        console.error("Transaction failed: An unknown error occurred");
+      }
     }
+    
   };
 
   return (

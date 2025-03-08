@@ -1,4 +1,4 @@
-import { Navigation } from "@/components/navigation"
+
 import { Hero } from "@/components/hero"
 import { FeaturedPrompts } from "@/components/featured-prompts"
 import { Footer } from "@/components/footer"

@@ -1,9 +1,6 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { useState} from "react";
+// import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import {
-  HiveWalletProvider,
-  WalletConnectButton,
-  WalletKeysDisplay,
   useHiveWallet,
 } from '@/wallet/HIveKeychainAdapter';
 
@@ -14,24 +11,29 @@ interface PaymentOverlayProps {
 }
 
 export default function PaymentOverlay({ amount, onClose, handleSubmit }: PaymentOverlayProps) {
-  const { signTransaction, isConnected, account, connectWallet } = useHiveWallet();
+  const {  isConnected, account, connectWallet } = useHiveWallet();
 
-  const [platformAccount] = useState('cyph37');
+  // const [platformAccount] = useState('cyph37');
   const [errorMessage, setErrorMessage] = useState('');
-  const [transactionId, setTransactionId] = useState('');
+  const [transactionId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const isValidAmount = (value:string) => /^\d+\.\d{3}$/.test(value);
+  // const isValidAmount = (value:string) => /^\d+\.\d{3}$/.test(value);
 
   const handleConnect = async () => {
     try {
       setIsLoading(true);
       await connectWallet();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to connect wallet');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMessage(err.message || 'Failed to connect wallet');
+      } else {
+        setErrorMessage('Failed to connect wallet: An unknown error occurred');
+      }
     } finally {
       setIsLoading(false);
     }
+    
   };
 
   const handlePayment = async () => {
@@ -50,12 +52,16 @@ export default function PaymentOverlay({ amount, onClose, handleSubmit }: Paymen
       setIsLoading(true);
       handleSubmit();
       // ...existing payment logic...
-    } catch (err:any) {
-      console.error('Payment failed:', err.message);
-      setErrorMessage(err.message || 'Payment failed');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMessage(err.message || 'Failed to connect wallet');
+      } else {
+        setErrorMessage('Failed to connect wallet: An unknown error occurred');
+      }
     } finally {
       setIsLoading(false);
     }
+    
   };
 
   return (
