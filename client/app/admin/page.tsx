@@ -1,10 +1,8 @@
 "use client"
-import { Navigation } from '@/components/navigation';
+
 import { Button } from '@/components/ui/button';
 import React, { useEffect, useState } from 'react';
 import {
-  HiveWalletProvider,
-  WalletConnectButton,
   useHiveWallet,
 } from '../../wallet/HIveKeychainAdapter';
 
@@ -39,11 +37,16 @@ const Admin: React.FC = () => {
       setIsLoading(true);
       setErrorMessage('');
       await connectWallet();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to connect wallet');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMessage(`Failed to connect wallet: ${err.message}`);
+      } else {
+        setErrorMessage('Failed to connect wallet: An unknown error occurred');
+      }
     } finally {
       setIsLoading(false);
     }
+    
   };
 
   const handleConfirmation = (id: string, type: keyof Transaction) => {
@@ -89,9 +92,14 @@ const Admin: React.FC = () => {
       const updatedTransactions = transactions.filter((t) => t.id !== txId);
       setTransactions(updatedTransactions);
       localStorage.setItem('transactions', JSON.stringify(updatedTransactions));
-    } catch (err: any) {
-      console.error('Payout failed:', err.message);
-      setErrorMessage(err.message || 'Payout failed');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error('Payout failed:', err.message); // Access `message` safely
+        setErrorMessage(err.message || 'Payout failed');
+      } else {
+        console.error('Payout failed: An unknown error occurred');
+        setErrorMessage('Payout failed: An unknown error occurred');
+      }
     }
   };
 

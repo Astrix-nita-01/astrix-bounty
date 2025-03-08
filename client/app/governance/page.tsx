@@ -1,6 +1,6 @@
 "use client"
 
-import { Navigation } from "@/components/navigation"
+
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -73,7 +73,7 @@ export default function GovernancePage() {
                       <div>
                         <CardTitle>Dispute #123</CardTitle>
                         <p className="text-sm text-muted-foreground mt-2">
-                          Buyer claims the prompt quality doesn't match the description.
+                          Buyer claims the prompt quality doesn&apos;t match the description.
                         </p>
                       </div>
                       <Badge variant="destructive">Active Dispute</Badge>

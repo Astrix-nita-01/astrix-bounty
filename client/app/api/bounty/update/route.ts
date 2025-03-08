@@ -8,7 +8,7 @@ export async function PUT(req: NextRequest){
 
     try {
         console.log("body: ", body);
-        const { bountyId, username, title, description, category, promptFile, budgetRange, skillsRequired } = body;
+        const { bountyId, username, title, description, category, promptFile, budget, skillsRequired } = body;
 
         // check if user exists
         const user = await client.user.findUnique({ where: { username } });
@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest){
                 description, 
                 category, 
                 promptFile, 
-                budgetRange, 
+                budget, 
                 skillsRequired,
             }
         });

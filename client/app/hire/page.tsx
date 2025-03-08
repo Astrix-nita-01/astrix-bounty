@@ -83,10 +83,16 @@ export default function SellPage() {
       setShowPaymentOverlay(false);
       //   alert(`Payment of ${formData.budget.toString()} HIVE to cyph37 completed successfully!`);
       handlePost();
-    } catch (err: any) {
-      console.error("Transaction failed:", err.message);
-      alert("Transaction failed: " + err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Transaction failed:", err.message);
+        alert("Transaction failed: " + err.message);
+      } else {
+        console.error("Transaction failed: An unknown error occurred");
+        alert("Transaction failed: An unknown error occurred");
+      }
     }
+    
   };
 
   const handlePost = async () => {
