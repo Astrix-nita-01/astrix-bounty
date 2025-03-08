@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Search, Wallet } from "lucide-react"
+import { Menu, Search } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import ConnectWallet from "./ConnectButton"
@@ -22,7 +22,7 @@ export function Navigation() {
             <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
               Browse
             </Link>
-            <Link href="/sell" className="transition-colors hover:text-foreground/80 text-foreground">
+            <Link href="/hire" className="transition-colors hover:text-foreground/80 text-foreground">
               Hire
             </Link>
             <Link href="/governance" className="transition-colors hover:text-foreground/80 text-foreground">
@@ -48,8 +48,8 @@ export function Navigation() {
               <Link href="/browse" className="hover:text-foreground/80">
                 Browse
               </Link>
-              <Link href="/sell" className="hover:text-foreground/80">
-                Sell
+              <Link href="/hire" className="hover:text-foreground/80">
+                Hire
               </Link>
               <Link href="/governance" className="hover:text-foreground/80">
                 Governance

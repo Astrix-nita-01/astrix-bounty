@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int           @id @default(autoincrement())
+  username       String        @unique
+  skills         String[]
+  projects       Json
+  resume         String
+  description    String
+  profilePicture String
+  ratings        Float
+  bounties       Bounty[]      @relation("UserBounties")
+  applications   Application[]
+}
+
+model Bounty {
+  id               Int           @id @default(autoincrement())
+  title            String
+  description      String
+  category         String
+  promptFile       String
+  budget           Float
+  skillsRequired   String[]
+  postedBy         User          @relation("UserBounties", fields: [postedByUsername], references: [username])
+  postedByUsername String
+  applications     Application[]
+}
+
+model Application {
+  id                Int    @id @default(autoincrement())
+  coverLetter       String
+  resume            String
+  status            String @default("pending")
+  bounty            Bounty @relation(fields: [bountyId], references: [id])
+  bountyId          Int
+  applicant         User   @relation(fields: [applicantUsername], references: [username])
+  applicantUsername String
+}

@@ -10,9 +10,10 @@ import {
 interface PaymentOverlayProps {
   amount: string;
   onClose: () => void;
+  handleSubmit: () => void;
 }
 
-export default function PaymentOverlay({ amount, onClose }: PaymentOverlayProps) {
+export default function PaymentOverlay({ amount, onClose, handleSubmit }: PaymentOverlayProps) {
   const { signTransaction, isConnected, account, connectWallet } = useHiveWallet();
 
   const [platformAccount] = useState('cyph37');
@@ -39,13 +40,15 @@ export default function PaymentOverlay({ amount, onClose }: PaymentOverlayProps)
       return;
     }
 
-    if (!isValidAmount(amount)) {
-      setErrorMessage('Amount must be in X.XXX format (e.g., 1.000 HIVE)');
-      return;
-    }
+    // if (!isValidAmount(amount)) {
+    //   setErrorMessage('Amount must be in X.XXX format (e.g., 1.000 HIVE)');
+    //   return;
+    // }
 
     try {
+      console.log("submitting");
       setIsLoading(true);
+      handleSubmit();
       // ...existing payment logic...
     } catch (err:any) {
       console.error('Payment failed:', err.message);
