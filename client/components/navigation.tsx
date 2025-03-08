@@ -41,11 +41,14 @@ export function Navigation() {
           <Link href="/browse" className="hover:text-gray-500 transition duration-300">
             Browse
           </Link>
-          <Link href="/sell" className="hover:text-gray-500 transition duration-300">
+          <Link href="/hire" className="hover:text-gray-500 transition duration-300">
             Hire
           </Link>
           <Link href="/governance" className="hover:text-gray-500 transition duration-300">
             Review
+          </Link>
+          <Link href="/mybounties" className="hover:text-gray-500 transition duration-300">
+            My Bounties
           </Link>
           <Link href="/profile" className="hover:text-gray-500 transition duration-300">
             Profile

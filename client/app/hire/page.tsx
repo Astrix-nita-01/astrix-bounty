@@ -129,7 +129,7 @@ export default function SellPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Sell a Service</h1>
+      <h1 className="text-2xl font-bold mb-4">Post a bounty</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Title</label>

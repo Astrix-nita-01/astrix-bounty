@@ -31,7 +31,7 @@ export async function POST(req: NextRequest){
         }
 
         // check if user owns the bounty
-        if(existingBounty.postedById !== username) {
+        if(existingBounty.postedByUsername !== username) {
             return NextResponse.json({
                 success: false,
                 message: `user do not own the bounty`,
