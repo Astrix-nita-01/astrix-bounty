@@ -411,7 +411,7 @@ function fetchDataAvailibilityProof(
     const errorTimeout = setTimeout(async () => {
       await ipfs.pubsub.unsubscribe(FILE_UPLOAD_RESPONSE_TOPIC, handler);
       reject(new Error("Timeout fetching data availability proof"));
-    }, 60000);
+    }, 180000);
 
     const multisig = new BlsCircuitGenerator(await getEpochMembers());
     // TODO listen to epoch change events and update the multisig accordingly

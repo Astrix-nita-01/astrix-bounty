@@ -130,13 +130,13 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
         throw new Error('Failed to fetch account data');
       }
 
-      const { posting, active, owner, memo_key } = accountData[0];
-      setKeys({
-        posting: posting.key_auths[0][0],
-        active: active.key_auths[0][0],
-        owner: owner.key_auths[0][0],
-        memo: memo_key,
-      });
+      // const { posting, active, owner, memo_key } = accountData[0];
+      // setKeys({
+      //   posting: posting.key_auths[0][0],
+      //   active: active.key_auths[0][0],
+      //   owner: owner.key_auths[0][0],
+      //   memo: memo_key,
+      // });
     } catch (err) {
       setError((err as Error).message);
       setIsConnected(false);
