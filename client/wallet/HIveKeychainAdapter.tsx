@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode, Dispatch, SetStateAction } from 'react';
 import { Client } from '@hiveio/dhive';
 
 declare global {
@@ -11,6 +11,7 @@ declare global {
 
 interface HiveWalletContextType {
   isConnected: boolean;
+  setIsConnected: Dispatch<SetStateAction<boolean>>;
   account: string | null;
   error: string | null;
   keys: {
@@ -27,13 +28,33 @@ interface HiveWalletContextType {
   isKeychainAvailable: boolean;
 }
 
+const defaultState = {
+  isConnected: false,
+  setIsConnected: (isConnected: boolean) => {},
+  account: null,
+  error: null,
+  keys: {
+    posting: null,
+    active: null,
+    owner: null,
+    memo: null,
+  },
+  transactionLog: '',
+  connectWallet: () => {},
+  signTransaction: (operation: any, keyType?: string) => {},
+  disconnectWallet: () => {},
+  isHiveKeychainInstalled: () => {},
+  isKeychainAvailable: false,
+} as HiveWalletContextType;
+
 interface HiveWalletProviderProps {
   children: ReactNode;
 }
 
 const hiveClient = new Client(['https://api.hive.blog', 'https://api.deathwing.me']);
 
-const HiveWalletContext = createContext<HiveWalletContextType | undefined>(undefined);
+// const HiveWalletContext = createContext<HiveWalletContextType | undefined>(undefined);
+const HiveWalletContext = createContext<HiveWalletContextType | undefined>(defaultState);
 
 export const useHiveWallet = (): HiveWalletContextType => {
   const context = useContext(HiveWalletContext);
@@ -44,10 +65,10 @@ export const useHiveWallet = (): HiveWalletContextType => {
 };
 
 export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children }) => {
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
   const [account, setAccount] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isKeychainAvailable, setIsKeychainAvailable] = useState(false);
+  const [isKeychainAvailable, setIsKeychainAvailable] = useState<boolean>(false);
   const [keys, setKeys] = useState({
     posting: null,
     active: null,
@@ -57,7 +78,7 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
   const [transactionLog, setTransactionLog] = useState<any>(null);
 
   const checkHiveKeychain = useCallback((): boolean => {
-    return typeof window !== 'undefined' && !!window.hive_keychain;
+    return typeof window !== 'undefined' && window.hive_keychain;
   }, []);
 
   useEffect(() => {
@@ -116,14 +137,24 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
         }
       });
 
+      console.log("response: ", response);
+
       if (!response.success || !response.data?.username) {
         throw new Error(response.error || 'Failed to connect to Hive Keychain');
       }
 
       const username = response.data.username;
+      console.log("username: ", username);
       setAccount(username);
       setIsConnected(true);
       setError(null);
+      console.log("Wallet connected: ", isConnected);
+      
+
+      while(!isConnected){
+        console.log("Wallet connected: ", isConnected);
+      }
+      
 
       const accountData = await hiveClient.database.getAccounts([username]);
       if (!accountData || accountData.length === 0) {
@@ -146,6 +177,7 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
   }, [checkHiveKeychain]);
 
   const disconnectWallet = useCallback(() => {
+    console.log("state: :", isConnected);
     setIsConnected(false);
     setAccount(null);
     setError(null);
@@ -157,6 +189,7 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
     <HiveWalletContext.Provider
       value={{
         isConnected,
+        setIsConnected,
         account,
         error,
         keys,
@@ -195,6 +228,23 @@ export const WalletConnectButton: React.FC = () => {
         </div>
       )}
       {error && <p style={{ color: 'red' }}>{error}</p>}
+    </div>
+  );
+};
+export const WalletKeysDisplay = () => {
+  const { isConnected, keys } = useHiveWallet();
+
+  if (!isConnected) return null;
+
+  return (
+    <div>
+      <p>Public Keys:</p>
+      <ul>
+        <li>Posting: {keys.posting || 'Not Available'}</li>
+        <li>Active: {keys.active || 'Not Available'}</li>
+        <li>Owner: {keys.owner || 'Not Available'}</li>
+        <li>Memo: {keys.memo || 'Not Available'}</li>
+      </ul>
     </div>
   );
 };
