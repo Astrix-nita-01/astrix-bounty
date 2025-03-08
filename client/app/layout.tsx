@@ -26,13 +26,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        
-         <HiveWalletProvider>
-          <Navigation/>
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <HiveWalletProvider>
+          <Navigation />
+          {children}
         </HiveWalletProvider>
       </body>
     </html>

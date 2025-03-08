@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import {
   HiveWalletProvider,
   WalletConnectButton,
-  WalletKeysDisplay,
   useHiveWallet,
 } from '../../wallet/HIveKeychainAdapter';
 
@@ -19,15 +18,33 @@ interface Transaction {
 }
 
 const Admin: React.FC = () => {
-  const { signTransaction, isConnected } = useHiveWallet();
+  const { signTransaction, isConnected, account, connectWallet } = useHiveWallet();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [freelancerAddresses, setFreelancerAddresses] = useState<{ [key: string]: string }>({});
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const storedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]') as Transaction[];
     setTransactions(storedTransactions);
   }, []);
+
+  useEffect(() => {
+    console.log("Admin Page - Connection State:", isConnected);
+    console.log("Admin Page - Account:", account);
+  }, [isConnected, account]);
+
+  const handleConnect = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage('');
+      await connectWallet();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to connect wallet');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleConfirmation = (id: string, type: keyof Transaction) => {
     const updatedTransactions = transactions.map((tx) =>
@@ -39,7 +56,7 @@ const Admin: React.FC = () => {
 
   const handleSendToFreelancer = async (txId: string) => {
     if (!isConnected) {
-      setErrorMessage('Please connect your wallet');
+      await handleConnect();
       return;
     }
 
@@ -95,15 +112,32 @@ const Admin: React.FC = () => {
   };
 
   return (
-    <HiveWalletProvider>
       <div>
         {/* <Navigation /> */}
         <main className="flex-1 container py-8">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold mb-2">Admin-Transaction Management</h1>
-            <Button onClick={handleTestTransaction} style={{ marginBottom: '15px' }}>
-              Add Test Transaction
-            </Button>
+            
+            {!isConnected ? (
+              <div className="mb-4">
+                <Button 
+                  onClick={handleConnect}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Connecting...' : 'Connect Wallet'}
+                </Button>
+              </div>
+            ) : (
+              <div className="mb-4">
+                <Button 
+                  onClick={handleTestTransaction} 
+                  style={{ marginBottom: '15px' }}
+                >
+                  Add Test Transaction
+                </Button>
+              </div>
+            )}
+
             {transactions.length === 0 ? (
               <p>No transactions yet.</p>
             ) : (
@@ -158,7 +192,6 @@ const Admin: React.FC = () => {
           </div>
         </main>
       </div>
-    </HiveWalletProvider>
   );
 };
 

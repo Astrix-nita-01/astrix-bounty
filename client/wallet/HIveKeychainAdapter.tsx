@@ -51,9 +51,8 @@ interface HiveWalletProviderProps {
   children: ReactNode;
 }
 
-const hiveClient = new Client(['https://api.hive.blog', 'https://api.deathwing.me']);
+const hiveClient = new Client(['https://api.hive.blog', 'https://api.deathwing.me', 'https://api.vsc.eco']);
 
-// const HiveWalletContext = createContext<HiveWalletContextType | undefined>(undefined);
 const HiveWalletContext = createContext<HiveWalletContextType | undefined>(defaultState);
 
 export const useHiveWallet = (): HiveWalletContextType => {
@@ -107,6 +106,10 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
     };
   }, [checkHiveKeychain]);
 
+  useEffect(() => {
+    console.log("Connection state changed:", isConnected);
+  }, [isConnected]);
+
   const connectWallet = useCallback(async () => {
     try {
       if (!checkHiveKeychain()) {
@@ -151,23 +154,10 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
       console.log("Wallet connected: ", isConnected);
       
 
-      while(!isConnected){
-        console.log("Wallet connected: ", isConnected);
-      }
-      
-
       const accountData = await hiveClient.database.getAccounts([username]);
       if (!accountData || accountData.length === 0) {
         throw new Error('Failed to fetch account data');
       }
-
-      // const { posting, active, owner, memo_key } = accountData[0];
-      // setKeys({
-      //   posting: posting.key_auths[0][0],
-      //   active: active.key_auths[0][0],
-      //   owner: owner.key_auths[0][0],
-      //   memo: memo_key,
-      // });
     } catch (err) {
       setError((err as Error).message);
       setIsConnected(false);
