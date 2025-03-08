@@ -1,37 +1,72 @@
-# astrix-bounty
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Astrix-Bounty
 
-## Getting Started
+Astrix-Bounty is a decentralized platform built with Next.js that enables users to sell services (e.g., creative writing, NFT creation, music, digital art) and manage transactions using the Hive blockchain. The platform integrates with the Hive Keychain extension to facilitate secure wallet connections and cryptocurrency payments (HIVE). This project is designed for a hackathon, showcasing a user-friendly interface for service submission with real-time transaction capabilities.
 
-First, run the development server:
+## Features
+- **Service Submission**: Users can submit services with a title, description, category, and price on the `/sell` page.
+- **Hive Wallet Integration**: Connects to Hive Keychain for wallet authentication and transaction signing.
+- **Transaction Payment**: Allows users to pay 1.000 HIVE to the `platform` address to submit a service, with Hive Keychain approval.
+- **Navigation**: Includes links to Browse, Hire (/sell), Review (/governance), and Profile pages, styled with a dark theme and purple connect button.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Prerequisites
+- **Node.js**: Version 14.x or higher.
+- **npm**: Version 6.x or higher (comes with Node.js).
+- **Hive Keychain Extension**: Installed in your browser (e.g., Chrome or Firefox) and logged into a Hive account with sufficient HIVE (at least 1 HIVE for testing transactions).
+- **Code Editor**: e.g., VS Code.
+
+## Installation
+
+### Step 1: Clone the Repository
+```
+git clone <your-repo-url>
+cd astrix-bounty
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Step 2: Install Dependencies
+Run the following command to install the required Node.js packages:
+```
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Step 3: Set Up Environment
+No environment variables are required for this project. However, ensure your Hive Keychain is configured with a test account that has HIVE for transaction testing.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Step 4: Run the Development Server
+Start the Next.js development server with:
 
-## Learn More
+```
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open your browser and navigate to http://localhost:3000. The app should be running, and you’ll see the navigation bar and the default page.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Step 5: Connect Hive Wallet
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Install the Hive Keychain extension if not already installed.
+- Log into Hive Keychain with a Hive account that has at least 1 HIVE.
+- Click the "Connect Hive Wallet" button in the navigation bar to connect your wallet. The button will change to show your username (e.g., "Connected as: <username>").
 
-## Deploy on Vercel
+### Step 6: Test the Sell Page
+- Navigate to http://localhost:3000/sell.
+- Fill out the form with a title, description, category, and price.
+- Click "Pay and Submit" to open the payment overlay.
+- Click "Pay 1.000 HIVE" to initiate a transaction. Approve the transaction in the Hive Keychain popup.
+- If successful, you’ll see an alert confirming the payment, and the overlay will close.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Step 7: Explore Navigation
+- Click "Hire" to navigate to the /sell page.
+- Click "Review" to navigate to the /governance page.
+- Use "Browse" and "Profile" to explore other pages (note: these may be placeholders unless implemented).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Technologies Used
+- Next.js: React framework for server-side rendering and static site generation.
+- TypeScript: For type safety in the codebase.
+- Tailwind CSS: For responsive and customizable styling.
+- Hive SDK (@hiveio/dhive): For interacting with the Hive blockchain.
+- Hive Keychain: Browser extension for wallet management and transaction signing.
+- Tailwind CSS: For responsive and customizable styling.
+- Hive SDK (@hiveio/dhive): For interacting with the Hive blockchain.
+- Hive Keychain: Browser extension for wallet management and transaction signing.
+
+### Contributing
+This is a hackathon project, but contributions are welcome! Please fork the repository, create a feature branch, and submit a pull request.
