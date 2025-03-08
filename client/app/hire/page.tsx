@@ -1,28 +1,24 @@
 "use client";
 
-import { Footer } from "@/components/footer";
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { useHiveWallet } from "@/wallet/HIveKeychainAdapter";
+import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload } from "lucide-react";
-import { useState } from "react";
-import PaymentOverlay from "@/components/paymentoverlay";
-import { useHiveWallet } from "@/wallet/HIveKeychainAdapter";
-import axios from "axios";
+} from "@radix-ui/react-select";
+import { Button } from "@/components/ui/button";
+import { Badge, Upload } from "lucide-react";
 
 export default function SellPage() {
-  const { account, connectWallet } = useHiveWallet();
+  const { isConnected, account, signTransaction } = useHiveWallet();
   const [isLoading, setIsLoading] = useState(false);
+  const [newSkill, setNewSkill] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -31,9 +27,10 @@ export default function SellPage() {
     budget: 0,
     skillsRequired: [] as string[],
   });
-  const [newSkill, setNewSkill] = useState("");
-  const [showPayment, setShowPayment] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [showPaymentOverlay, setShowPaymentOverlay] = useState(false);
+
+  console.log("SellPage - isConnected:", isConnected);
+  console.log("SellPage - account:", account);
 
   const handleSkillAdd = () => {
     if (newSkill && !formData.skillsRequired.includes(newSkill)) {
@@ -54,37 +51,47 @@ export default function SellPage() {
     }));
   };
 
-  const handleConnect = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isConnected || !account) {
+      alert("Please connect your wallet first");
+      return;
+    }
+    setShowPaymentOverlay(true);
+  };
+
+  const handlePay = async () => {
+    if (!isConnected || !account) {
+      alert("Please connect your wallet first");
+      return;
+    }
+
     try {
-      setIsLoading(true);
-      await connectWallet();
-    } catch (err) {
-      console.log(`Failed to connect wallet: ${err}`);
-    } finally {
-      setIsLoading(false);
+      const operation = [
+        "transfer",
+        {
+          from: account,
+          to: "cyph37",
+          amount: `${formData.budget.toString()}`,
+          memo: "Payment for service submission",
+        },
+      ];
+
+      console.log("Initiating real transaction:", operation);
+      const result = await signTransaction(operation, "Active");
+      console.log("Transaction successful:", result);
+      setShowPaymentOverlay(false);
+      //   alert(`Payment of ${formData.budget.toString()} HIVE to cyph37 completed successfully!`);
+      handlePost();
+    } catch (err: any) {
+      console.error("Transaction failed:", err.message);
+      alert("Transaction failed: " + err.message);
     }
   };
 
-  const payAmount = async () => {
-    if (!account) {
-      console.log("connecting...");
-      await handleConnect();
-      return;
-    }
-
-    setShowPayment(true);
-  }
-
-  const handleSubmit = async () => {
-    if (!account) {
-      console.log("connecting...");
-      await handleConnect();
-      return;
-    }
-
+  const handlePost = async () => {
     try {
       setIsLoading(true);
-      setError("");
 
       const payload = {
         username: account,
@@ -113,176 +120,219 @@ export default function SellPage() {
         budget: 0,
         skillsRequired: [],
       });
-      setShowPayment(false);
     } catch (err) {
-      setError(`Failed to create bounty ${err}`);
+      console.log(`Failed to create bounty ${err}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* <Navigation /> */}
-      <main className="flex-1 container py-8">
-        <div className="max-w-4xl mx-auto">
-          <Tabs defaultValue="new">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="new">New Bounty</TabsTrigger>
-              <TabsTrigger value="listings">My Listings</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="new" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>List a New Bounty</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                      {error}
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Title</label>
-                    <Input
-                      placeholder="Enter bounty title"
-                      value={formData.title}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          title: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Description</label>
-                    <Textarea
-                      placeholder="Describe your bounty..."
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          description: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Category</label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) =>
-                        setFormData((prev) => ({ ...prev, category: value }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white">
-                        <SelectItem value="creative">
-                          Creative Writing
-                        </SelectItem>
-                        <SelectItem value="coding">Coding</SelectItem>
-                        <SelectItem value="marketing">Marketing</SelectItem>
-                        <SelectItem value="business">Business</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Required Skills
-                    </label>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Add a skill"
-                        value={newSkill}
-                        onChange={(e) => setNewSkill(e.target.value)}
-                        onKeyPress={(e) =>
-                          e.key === "Enter" && handleSkillAdd()
-                        }
-                      />
-                      <Button type="button" onClick={handleSkillAdd}>
-                        Add
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.skillsRequired.map((skill) => (
-                        <Badge key={skill} className="flex items-center gap-1">
-                          {skill}
-                          <button
-                            onClick={() => handleSkillRemove(skill)}
-                            className="ml-1 hover:text-red-500"
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Budget (HIVE)</label>
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        placeholder="eg. 5"
-                        className="pl-9"
-                        value={formData.budget}
-                        onChange={(e) => setFormData({ ...formData, budget: parseFloat(e.target.value) })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Upload Bounty File
-                    </label>
-                    <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                      <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Drag and drop your bounty file here, or click to browse
-                      </p>
-                      <Input
-                        type="file"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setFormData((prev) => ({
-                              ...prev,
-                              promptFile: file.name,
-                            }));
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <Button
-                    className="w-full"
-                    onClick={payAmount}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Creating Bounty..." : "Create Bounty"}
-                  </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Sell a Service</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Title</label>
+          <Input
+            placeholder="Enter bounty title"
+            value={formData.title}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                title: e.target.value,
+              }))
+            }
+          />
         </div>
-      </main>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Description</label>
+          <Textarea
+            placeholder="Describe your bounty..."
+            value={formData.description}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                description: e.target.value,
+              }))
+            }
+          />
+        </div>
 
-      <Footer />
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Category</label>
+          <Select
+            value={formData.category}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, category: value }))
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="creative">Creative Writing</SelectItem>
+              <SelectItem value="coding">Coding</SelectItem>
+              <SelectItem value="marketing">Marketing</SelectItem>
+              <SelectItem value="business">Business</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Required Skills</label>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add a skill"
+              value={newSkill}
+              onChange={(e) => setNewSkill(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSkillAdd()}
+            />
+            <Button type="button" onClick={handleSkillAdd}>
+              Add
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {formData.skillsRequired.map((skill) => (
+              <Badge key={skill} className="flex items-center gap-1">
+                {skill}
+                <button
+                  onClick={() => handleSkillRemove(skill)}
+                  className="ml-1 hover:text-red-500"
+                >
+                  ×
+                </button>
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Budget (HIVE)</label>
+          <div className="relative">
+            <Input
+              type="number"
+              placeholder="eg. 5"
+              className="pl-9"
+              value={formData.budget}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  budget: parseFloat(e.target.value),
+                })
+              }
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Upload Bounty File</label>
+          <div className="border-2 border-dashed rounded-lg p-6 text-center">
+            <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+            <p className="mt-2 text-sm text-muted-foreground">
+              Drag and drop your bounty file here, or click to browse
+            </p>
+            <Input
+              type="file"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    promptFile: file.name,
+                  }));
+                }
+              }}
+            />
+          </div>
+        </div>
+
+        <Button
+          type="submit"
+          disabled={!isConnected || isLoading}
+          className={`px-4 py-2 rounded-md text-white ${
+            isConnected
+              ? "bg-blue-600 hover:bg-blue-700"
+              : "bg-gray-400 cursor-not-allowed"
+          }`}
+        >
+          { isLoading ? "posting..." : "Pay and Submit" }
+        </Button>
+      </form>
+
       {/* Payment Overlay */}
-
-      {showPayment && (
-        <PaymentOverlay amount={formData.budget.toString()} onClose={() => setShowPayment(false)} handleSubmit={() => handleSubmit()} />
+      {showPaymentOverlay && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "5px",
+              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1.25rem",
+                fontWeight: "bold",
+                marginBottom: "1rem",
+              }}
+            >
+              Complete Your Payment
+            </h2>
+            <p>Pay {formData.budget} HIVE to submit your service.</p>
+            <button
+              onClick={handlePay}
+              style={{
+                marginTop: "1rem",
+                padding: "0.5rem 1rem",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                borderRadius: "5px",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = "#45a049")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "#4CAF50")
+              }
+            >
+              Pay {formData.budget} HIVE
+            </button>
+            <button
+              onClick={() => setShowPaymentOverlay(false)}
+              style={{
+                marginTop: "0.5rem",
+                padding: "0.5rem 1rem",
+                backgroundColor: "#ddd",
+                color: "black",
+                borderRadius: "5px",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = "#ccc")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "#ddd")
+              }
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
