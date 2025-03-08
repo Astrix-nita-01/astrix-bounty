@@ -12,7 +12,7 @@ import { Clock, Check, X } from "lucide-react"
 export default function GovernancePage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      {/* <Navigation /> */}
       <main className="flex-1 container py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">

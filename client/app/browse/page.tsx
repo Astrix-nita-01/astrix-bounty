@@ -73,7 +73,7 @@ export default function BrowsePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      {/* <Navigation /> */}
       <main className="flex-1 container py-8">
         <div className="flex flex-col gap-8">
           {/* Search and Filter Bar */}

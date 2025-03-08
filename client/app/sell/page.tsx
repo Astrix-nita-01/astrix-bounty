@@ -10,11 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload, DollarSign } from "lucide-react"
+import { useState } from "react"
+import PaymentOverlay from "@/components/paymentoverlay"
+import { HiveWalletProvider } from "@/wallet/HIveKeychainAdapter"
 
 export default function SellPage() {
+  const [price, setPrice] = useState<string>("");
+  const [showPayment, setShowPayment] = useState<boolean>(false);
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      {/* <Navigation /> */}
       <main className="flex-1 container py-8">
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="new">
@@ -45,7 +51,7 @@ export default function SellPage() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white">
                         <SelectItem value="creative">Creative Writing</SelectItem>
                         <SelectItem value="coding">Coding</SelectItem>
                         <SelectItem value="marketing">Marketing</SelectItem>
@@ -55,10 +61,17 @@ export default function SellPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Price (ETH)</label>
+                    <label className="text-sm font-medium">Price (HIVE)</label>
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input type="number" placeholder="0.00" className="pl-9" step="0.01" />
+                      <Input
+                    type="number"
+                    placeholder="0.00"
+                    className="pl-9"
+                    step="0.01"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
                     </div>
                   </div>
 
@@ -73,7 +86,7 @@ export default function SellPage() {
                     </div>
                   </div>
 
-                  <Button className="w-full">Submit Prompt</Button>
+                  <Button className="w-full" onClick={() => setShowPayment(true)}>Pay and Submit</Button>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -92,7 +105,7 @@ export default function SellPage() {
                       Generate engaging short stories with complex characters and plot twists.
                     </p>
                     <div className="flex justify-between items-center">
-                      <span className="font-bold">0.1 ETH</span>
+                      <span className="font-bold">0.1 HIVE</span>
                       <div className="space-x-2">
                         <Button variant="outline" size="sm">
                           Edit
@@ -109,7 +122,12 @@ export default function SellPage() {
           </Tabs>
         </div>
       </main>
+
       <Footer />
+       {/* Payment Overlay */}
+      
+       {showPayment && <PaymentOverlay amount={price} onClose={() => setShowPayment(false)} />}
+    
     </div>
   )
 }
