@@ -14,14 +14,15 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 interface BountyInterface {
-  budget: number
-  category: string
-  description: string
-  id: number
-  postedByUsername: string
-  promptFile: string
-  skillsRequired: string[]
-  title: string
+  budget: number;
+  category: string;
+  description: string;
+  id: number;
+  postedByUsername: string;
+  promptFile: string;
+  skillsRequired: string[];
+  title: string;
+  postedOn: string;
 }
 
 interface UserDetailsInterface {

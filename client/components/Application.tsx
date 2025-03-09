@@ -6,6 +6,7 @@ import { Avatar } from "@radix-ui/react-avatar";
 import { StarIcon, UserCircle } from "lucide-react";
 import axios from "axios";
 import { Button } from "./ui/button";
+import Image from "next/image";
 // import Image from "next/image";
 
 interface ApplicationInterface {
@@ -92,14 +93,13 @@ function Application({ application, updateApplicationStatus }: { application: Ap
           <div className="flex items-center space-x-4">
             <Avatar className="h-12 w-12">
               {userDetails ? (
-                // <Image
-                //   src={userDetails.profilePicture}
-                //   alt={userDetails.username}
-                //   className="rounded-full object-cover"
-                //   width={100}
-                //   height={100}
-                // />
-                <UserCircle className="h-12 w-12" />
+                <Image
+                  src={userDetails.profilePicture}
+                  alt={userDetails.username}
+                  className="rounded-full object-cover"
+                  width={100}
+                  height={100}
+                />
               ) : (
                 <UserCircle className="h-12 w-12" />
               )}

@@ -6,12 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, History, Settings } from "lucide-react";
+import { History, Settings } from "lucide-react";
 import { useHiveWallet } from "@/wallet/HIveKeychainAdapter";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import axios from 'axios';
+import ApplicationOnProfile from "@/components/ApplicationOnProfile";
+import uploadImage from "@/utils/imageUploader";
 
 interface UserProfile {
   skills: string[]
@@ -23,6 +25,18 @@ interface UserProfile {
   resume: string
   description: string
   profilePicture: string
+}
+
+interface ApplicationInterface {
+  id: number;
+  applicantUsername: string;
+  resume: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  rating: number;
+  submittedAt: string;
+  bountyId: number;
+  coverLetter: string;
+  appliedOn: string;
 }
 
 export default function ProfilePage() {
@@ -41,6 +55,8 @@ export default function ProfilePage() {
     description: "",
     link: "",
   });
+  const [allApplications, setAllApplications] = useState<ApplicationInterface[]>([]);
+  const [image, setImage] = useState<File | null>(null);
 
   const handleConnect = async () => {
     try {
@@ -95,10 +111,34 @@ export default function ProfilePage() {
     }
 
     try {
-      setIsLoading(true); 
-      const response = await axios.post("/api/user/upsertuser", {
-        username: account, ...profile,
-      });
+      setIsLoading(true);
+
+      let image_url = '';
+            
+      const formDataForFile = new FormData();
+      if(image) {
+        formDataForFile.append('file', image);
+      }
+
+      const uploadImageRes = await uploadImage(formDataForFile);
+      const uploadImageResObj = JSON.parse(uploadImageRes);
+
+      if(!uploadImageResObj.success){
+          return console.log("error uploading image: ", uploadImageResObj.error);
+      }
+      
+      image_url = uploadImageResObj.imageURL;
+
+      const payload = {
+        username: account,
+        profilePicture: image_url,
+        skills: profile.skills,
+        projects: profile.projects,
+        resume: profile.resume,
+        description: profile.description,
+      }
+
+      const response = await axios.post("/api/user/upsertuser", payload);
 
       console.log("response: ", response.data);
 
@@ -116,30 +156,50 @@ export default function ProfilePage() {
     }
   };
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (!account) return;
-      
-      try {
-        const userDataResponse = await axios.post("/api/user/getuser", { username: account });
-        console.log("user response: ", userDataResponse.data);
+  const getAllApplicationsOfUser = async () => {
+    if (!account) {
+      alert("please connect your wallet");
+      return;
+    }
 
-        if(userDataResponse.data.success) {
-          const userDetails = userDataResponse.data.user;
-          setProfile({
-            skills: userDetails.skills || [],
-            projects: userDetails.projects || [],
-            resume: userDetails.resume || "",
-            description: userDetails.description || "",
-            profilePicture: userDetails.profilePicture || "",
-          });
-        }
-      } catch (error) {
-        console.log("Error loading profile:", error);
+    try {
+      const response = await axios.post("/api/application/getAppliedbyuser", { username: account });
+
+      console.log("all applications by user: ", response.data);
+
+      if(response.data.success) {
+        setAllApplications(response.data.applicationsByUser);
       }
-    };
+    } catch (error) {
+      console.log("can not get applications by user: ", error);
+    }
+  }
+
+  const loadProfile = async () => {
+    if (!account) return;
     
-    loadProfile();
+    try {
+      const userDataResponse = await axios.post("/api/user/getuser", { username: account });
+      console.log("user response: ", userDataResponse.data);
+
+      if(userDataResponse.data.success) {
+        const userDetails = userDataResponse.data.user;
+        setProfile({
+          skills: userDetails.skills || [],
+          projects: userDetails.projects || [],
+          resume: userDetails.resume || "",
+          description: userDetails.description || "",
+          profilePicture: userDetails.profilePicture || "",
+        });
+      }
+    } catch (error) {
+      console.log("Error loading profile:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadProfile()
+    .then(() => getAllApplicationsOfUser());
   }, [account]);
 
   return (
@@ -170,9 +230,8 @@ export default function ProfilePage() {
           </div>
 
           <Tabs defaultValue="activity">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="activity">Activity</TabsTrigger>
-              <TabsTrigger value="wallet">Wallet</TabsTrigger>
               <TabsTrigger id="settings-tab" value="settings">Settings</TabsTrigger>
             </TabsList>
 
@@ -182,64 +241,23 @@ export default function ProfilePage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <History className="h-5 w-5" />
-                      Recent Activity
+                      Recent Applications
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {/* Activity Items */}
-                      <div className="flex justify-between items-center py-2 border-b">
-                        <div>
-                          <p className="font-medium">
-                            Purchased {"SEO Content Optimizer"}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            2 days ago
-                          </p>
-                        </div>
-                        <Badge className="text-white">0.08 ETH</Badge>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b">
-                        <div>
-                          <p className="font-medium">
-                            Sold {"Creative Story Generator"}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            5 days ago
-                          </p>
-                        </div>
-                        <Badge className="text-white">0.1 ETH</Badge>
-                      </div>
+                      {
+                        allApplications.map((app) => {
+                          return (
+                            <ApplicationOnProfile key={app.id} application={app} />
+                          );
+                        })
+                      }
                     </div>
                   </CardContent>
                 </Card>
               </div>
-            </TabsContent>
-
-            <TabsContent value="wallet" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Wallet className="h-5 w-5" />
-                    Wallet Details
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Connected Wallet
-                      </p>
-                      <p className="font-mono">0x1234...5678</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Balance</p>
-                      <p className="text-2xl font-bold">2.5 ETH</p>
-                    </div>
-                    <Button className="w-full">Withdraw Funds</Button>
-                  </div>
-                </CardContent>
-              </Card>
             </TabsContent>
 
             <TabsContent value="settings" className="mt-6">
@@ -253,18 +271,25 @@ export default function ProfilePage() {
                 <CardContent>
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <label>Profile Picture URL</label>
-                      <Input
-                        type="url"
-                        value={profile.profilePicture}
-                        onChange={(e) =>
-                          setProfile((prev) => ({
-                            ...prev,
-                            profilePicture: e.target.value,
-                          }))
-                        }
-                        placeholder="https://example.com/image.jpg"
-                      />
+                      <p className="mb-2">Profile Picture URL</p>
+                      <label className="w-20 h-20 rounded-full">
+                        <Input
+                          type="file"
+                          hidden={true}
+                          accept="image/.png,.jpg,jpeg"
+                          onChange={(e) => {
+                            const { files } = e.target;
+                            if(!files) return;
+
+                            const file = files[0];
+                            setProfile((prev) => ({
+                              ...prev,
+                              profilePicture: file.name,
+                            }));
+                            setImage(file);
+                          }}
+                        />
+                      </label>
                     </div>
 
                     <div className="space-y-2">

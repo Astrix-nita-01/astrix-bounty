@@ -57,12 +57,6 @@ export function Navigation() {
 
         {/* Search Bar and Wallet Button */}
         <div className="flex items-center space-x-4">
-          <input
-            type="text"
-            placeholder="Search prompts..."
-            className="p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-300"
-          />
-
           {/* Wallet Button & Dropdown */}
           <div className="relative" ref={dropdownRef}>
             {isConnected ? (
