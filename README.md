@@ -1,10 +1,9 @@
-# **ASTRIX BOUNTY  X  INTELLIMATCH : Blockchain Meets AI for Smarter Opportunities**
+# **ASTRIX BOUNTY  ✦  INTELLIMATCH | BLOCKCHIAN MEETS AI**
+
 
 Astrix-Bounty is a decentralized service marketplace built with **Next.js** and integrated with the **Hive blockchain** for secure payments. Additionally, our project includes an **AI-powered job matching system** using **Flask** and **Sentence Transformers**, enabling intelligent job recommendations based on **semantic similarity**.
 
 This project is developed for a **hackathon**, showcasing a **user-friendly interface** with **real-time transactions and AI-powered job matching**.
-
----
 
 ## **Features**
 ### **Astrix-Bounty**
@@ -81,17 +80,22 @@ This project is developed for a **hackathon**, showcasing a **user-friendly inte
 - **Request Format:**
   ```json
   {
-    "skills": ["Python", "Machine Learning", "NLP"],
-    "jobs": [
-      { "id": 1, "title": "Data Scientist", "required_skills": ["Python", "AI", "Deep Learning"] },
-      { "id": 2, "title": "Software Engineer", "required_skills": ["JavaScript", "React", "Node.js"] }
-    ]
+  "skills": ["Python", "Django", "AI"],
+  "jobs": [
+    {"id": 1, "title": "Django Developer", "required_skills": ["Python", "Django"]},
+    {"id": 2, "title": "React Developer", "required_skills": ["JavaScript", "React"]},
+    {"id": 3, "title": "AI Engineer", "required_skills": ["Python", "AI", "Machine Learning"]}
+  ]
   }
   ```
 - **Response Format:**
   ```json
   {
-    "matched_jobs": [1, 2]
+    "matched_jobs": [
+        3,
+        1,
+        2
+    ]
   }
   ```
 
