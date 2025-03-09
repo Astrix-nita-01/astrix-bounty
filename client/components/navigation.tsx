@@ -45,7 +45,7 @@ export function Navigation() {
             Hire
           </Link>
           <Link href="/activities" className="hover:text-gray-500 transition duration-300">
-            Review
+            Activity
           </Link>
           <Link href="/mybounties" className="hover:text-gray-500 transition duration-300">
             My Bounties

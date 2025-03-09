@@ -5,26 +5,46 @@ import React, { useEffect, useState } from 'react';
 import {
   useHiveWallet,
 } from '../../wallet/HIveKeychainAdapter';
+import axios from 'axios';
 
 interface Transaction {
-  id: string;
-  from: string;
-  amount: string;
-  userConfirmed: boolean;
-  freelancerConfirmed: boolean;
+  id: number;
+  transactionId: string;
+  From: string;
+  amount: number;
   timestamp: string;
+  bountyId: number;
+  bountyStatus: string;
+  freelancer: string | null;
 }
 
 const Admin: React.FC = () => {
   const { signTransaction, isConnected, account, connectWallet } = useHiveWallet();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [freelancerAddresses, setFreelancerAddresses] = useState<{ [key: string]: string }>({});
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const getAllTransactions = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("/api/transactions/getforadmin");
+
+      console.log("all transactions: ", response.data);
+      
+      if (response.data.success) {
+        setTransactions(response.data.allTransactions);
+      }
+
+    } catch (error) {
+      console.log("Can not get bounties: ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+
   useEffect(() => {
-    const storedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]') as Transaction[];
-    setTransactions(storedTransactions);
+    getAllTransactions();
   }, []);
 
   useEffect(() => {
@@ -49,13 +69,13 @@ const Admin: React.FC = () => {
     
   };
 
-  const handleConfirmation = (id: string, type: keyof Transaction) => {
-    const updatedTransactions = transactions.map((tx) =>
-      tx.id === id ? { ...tx, [type]: !tx[type] } : tx
-    );
-    setTransactions(updatedTransactions);
-    localStorage.setItem('transactions', JSON.stringify(updatedTransactions));
-  };
+  // const handleConfirmation = (id: string, type: keyof Transaction) => {
+  //   const updatedTransactions = transactions.map((tx) =>
+  //     tx.transactionId === id ? { ...tx, [type]: !tx[type] } : tx
+  //   );
+  //   setTransactions(updatedTransactions);
+  //   localStorage.setItem('transactions', JSON.stringify(updatedTransactions));
+  // };
 
   const handleSendToFreelancer = async (txId: string) => {
     if (!isConnected) {
@@ -63,10 +83,10 @@ const Admin: React.FC = () => {
       return;
     }
 
-    const tx = transactions.find((t) => t.id === txId);
+    const tx = transactions.find((t) => t.transactionId === txId);
     if (!tx) return;
 
-    const freelancerAddress = freelancerAddresses[txId];
+    const freelancerAddress = tx.freelancer;
 
     if (!freelancerAddress || !/^[a-z][a-z0-9\-\.]{2,15}$/.test(freelancerAddress)) {
       setErrorMessage('Invalid freelancer address');
@@ -79,7 +99,7 @@ const Admin: React.FC = () => {
         {
           from: 'cyph37',
           to: freelancerAddress,
-          amount: tx.amount,
+          amount: tx.amount.toFixed(3),
           memo: `Payout for task - Transaction ${txId}`,
         },
       ];
@@ -89,7 +109,18 @@ const Admin: React.FC = () => {
       console.log('Payout successful:', result);
       setErrorMessage('');
 
-      const updatedTransactions = transactions.filter((t) => t.id !== txId);
+      if(result.success){
+        console.log("Transaction successful:", result);
+        // Delete transaction from database
+        const res = await axios.post("api/transactions/delete", { idoftx: tx.id });
+
+        console.log("transaction delete result: ", res.data);
+        if(res.data.success) {
+          getAllTransactions();
+        }
+      }
+
+      const updatedTransactions = transactions.filter((t) => t.transactionId !== txId);
       setTransactions(updatedTransactions);
       localStorage.setItem('transactions', JSON.stringify(updatedTransactions));
     } catch (err: unknown) {
@@ -103,21 +134,21 @@ const Admin: React.FC = () => {
     }
   };
 
-  const handleTestTransaction = () => {
-    const mockTransaction: Transaction = {
-      id: `test-${Date.now()}`,
-      from: 'test-client',
-      amount: '1.000 HIVE',
-      userConfirmed: false,
-      freelancerConfirmed: false,
-      timestamp: new Date().toLocaleString(),
-    };
+  // const handleTestTransaction = () => {
+  //   const mockTransaction: Transaction = {
+  //     id: `test-${Date.now()}`,
+  //     from: 'test-client',
+  //     amount: '1.000 HIVE',
+  //     userConfirmed: false,
+  //     freelancerConfirmed: false,
+  //     timestamp: new Date().toLocaleString(),
+  //   };
 
-    const updatedTransactions = [...transactions, mockTransaction];
-    setTransactions(updatedTransactions);
-    localStorage.setItem('transactions', JSON.stringify(updatedTransactions));
-    console.log('Test transaction added:', mockTransaction);
-  };
+  //   const updatedTransactions = [...transactions, mockTransaction];
+  //   setTransactions(updatedTransactions);
+  //   localStorage.setItem('transactions', JSON.stringify(updatedTransactions));
+  //   console.log('Test transaction added:', mockTransaction);
+  // };
 
   return (
       <div>
@@ -126,7 +157,7 @@ const Admin: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold mb-2">Admin-Transaction Management</h1>
             
-            {!isConnected ? (
+            {/* {!isConnected ? (
               <div className="mb-4">
                 <Button 
                   onClick={handleConnect}
@@ -144,50 +175,23 @@ const Admin: React.FC = () => {
                   Add Test Transaction
                 </Button>
               </div>
-            )}
+            )} */}
 
             {transactions.length === 0 ? (
-              <p>No transactions yet.</p>
+              isLoading ? (<p>Loading...</p>) : (<p>No transactions yet.</p>)
             ) : (
               <ul style={{ listStyle: 'none', padding: 0 }}>
                 {transactions.map((tx) => (
                   <li key={tx.id} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', borderRadius: '5px' }}>
                     <p><strong>Transaction ID:</strong> {tx.id}</p>
-                    <p><strong>From:</strong> {tx.from}</p>
+                    <p><strong>From:</strong> {tx.From}</p>
                     <p><strong>Amount:</strong> {tx.amount}</p>
                     <p><strong>Timestamp:</strong> {tx.timestamp}</p>
-                    <div style={{ marginTop: '10px' }}>
-                      <label style={{ marginRight: '20px' }}>
-                        <input
-                          type="checkbox"
-                          checked={tx.userConfirmed}
-                          onChange={() => handleConfirmation(tx.id, 'userConfirmed')}
-                        />
-                        User Confirmation
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={tx.freelancerConfirmed}
-                          onChange={() => handleConfirmation(tx.id, 'freelancerConfirmed')}
-                        />
-                        Freelancer Confirmation
-                      </label>
-                    </div>
-                    {tx.userConfirmed && tx.freelancerConfirmed && (
-                      <div style={{ marginTop: '10px' }}>
-                        <label style={{ display: 'block', marginBottom: '5px' }}>Freelancer Address:</label>
-                        <input
-                          type="text"
-                          value={freelancerAddresses[tx.id] || ''}
-                          className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          onChange={(e) =>
-                            setFreelancerAddresses((prev) => ({ ...prev, [tx.id]: e.target.value.toLowerCase() }))
-                          }
-                          placeholder="Freelancer's Hive username"
-                          style={{ width: '70%', padding: '8px', marginRight: '10px' }}
-                        />
-                        <Button className='bg-purple-500 rounded-full' onClick={() => handleSendToFreelancer(tx.id)}>
+                    
+                    {tx.bountyStatus === "accepted" && (
+                      <div className='flex justify-between items-center'>
+                        <p><strong>Freelancer Address:</strong> {tx.freelancer}</p>
+                        <Button className='bg-purple-500 rounded-full' onClick={() => handleSendToFreelancer(tx.transactionId)}>
                           Send to Freelancer ({tx.amount})
                         </Button>
                       </div>

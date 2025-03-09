@@ -124,11 +124,12 @@ export default function BountyDetails() {
       console.log(response.data);
 
       if (!response.data.success) {
-        console.log(`Can not post bounty: ${response.data.message}`);
+        console.log(`Can not apply to bounty: ${response.data.message}`);
       }
 
       setCoverLetter("");
       setIsOpen(false);
+      setIsAppliedByUser(true);
     } catch (err) {
       console.log(`Failed to create bounty ${err}`);
     } finally {

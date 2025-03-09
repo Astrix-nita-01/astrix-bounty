@@ -8,6 +8,7 @@ import axios from "axios";
 import { Skeleton } from "./ui/skeleton";
 import { Upload } from "lucide-react";
 import { Input } from "./ui/input";
+import uploadPDF from "@/utils/uploader";
 
 interface ApplicationInterface {
   id: number;
@@ -46,6 +47,7 @@ function ActiveApplication({ application, account, connectWallet }: { applicatio
     submissionFile: ""
   });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [pdf, setPdf] = useState<File | null>(null);
 
   const handleConnect = async () => {
     try {
@@ -72,11 +74,27 @@ function ActiveApplication({ application, account, connectWallet }: { applicatio
     try {
       setIsSubmitting(true);
 
+      let pdf_url = '';
+      
+      const formDataForFile = new FormData();
+      if(pdf) {
+        formDataForFile.append('pdf', pdf);
+      }
+
+      const uploadPdfRes = await uploadPDF(formDataForFile);
+      const uploadPdfResObj = JSON.parse(uploadPdfRes);
+
+      if(!uploadPdfResObj.success){
+          return console.log("error uploading image: ", uploadPdfResObj.error);
+      }
+      
+      pdf_url = uploadPdfResObj.pdfUrl;
+
       const payload = {
         applicantUsername: account,
         applicationId: application.id,
         bountyId: bounty.id, 
-        submissionFile: formData.submissionFile, 
+        submissionFile: pdf_url,
         submissionDetails: formData.submissionDetails
       };
       const response = await axios.post("/api/submission/submit", payload);
@@ -230,26 +248,38 @@ function ActiveApplication({ application, account, connectWallet }: { applicatio
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Upload Submission File</label>
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Drag and drop your submission file here, or click to browse
-                    </p>
-                    <Input
-                      type="file"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setFormData((prev) => ({
-                            ...prev,
-                            submissionFile: file.name,
-                          }));
-                        }
-                      }}
-                    />
-                  </div>
+                  <p className="text-sm font-medium">Upload Submission File</p>
+                  <label htmlFor="pdf-input" className="border-2 border-dashed rounded-lg p-6 text-center">
+                      {
+                        pdf ? (
+                          <p className="mt-2 text-sm text-muted-foreground">
+                            {formData.submissionFile}
+                          </p>
+                        ) : (
+                          <>
+                            <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                            <p className="mt-2 text-sm text-muted-foreground">
+                              Drag and drop your submission file here, or click to browse
+                            </p>
+                          </>
+                        )
+                      }
+                      <Input
+                        type="file"
+                        id="pdf-input"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              submissionFile: file.name,
+                            }));
+                            setPdf(file);
+                          }
+                        }}
+                      />
+                  </label>
                 </div>
 
                 <div className="mt-6">

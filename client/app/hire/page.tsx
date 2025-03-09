@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import uploadPDF from "@/utils/uploader";
 
 export default function SellPage() {
   const { isConnected, account, signTransaction } = useHiveWallet();
@@ -28,6 +29,7 @@ export default function SellPage() {
     budget: 0,
     skillsRequired: [] as string[],
   });
+  const [pdf, setPdf] = useState<File | null>(null);
   const [showPaymentOverlay, setShowPaymentOverlay] = useState(false);
 
   console.log("SellPage - isConnected:", isConnected);
@@ -73,7 +75,7 @@ export default function SellPage() {
         {
           from: account,
           to: "cyph37",
-          amount: `${formData.budget.toString()}`,
+          amount: formData.budget.toFixed(3),
           memo: "Payment for service submission",
         },
       ];
@@ -103,12 +105,28 @@ export default function SellPage() {
     try {
       setIsLoading(true);
 
+      let pdf_url = '';
+
+      const formDataForFile = new FormData();
+      if(pdf) {
+        formDataForFile.append('pdf', pdf);
+      }
+
+      const uploadPdfRes = await uploadPDF(formDataForFile);
+      const uploadPdfResObj = JSON.parse(uploadPdfRes);
+
+      if(!uploadPdfResObj.success){
+          return console.log("error uploading image: ", uploadPdfResObj.error);
+      }
+      
+      pdf_url = uploadPdfResObj.pdfUrl;
+
       const payload = {
         username: account,
         title: formData.title,
         description: formData.description,
         category: formData.category,
-        promptFile: formData.promptFile,
+        promptFile: pdf_url,
         budget: formData.budget,
         skillsRequired: formData.skillsRequired,
         transactionId: transactionId,
@@ -236,26 +254,39 @@ export default function SellPage() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Upload Bounty File</label>
-          <div className="border-2 border-dashed rounded-lg p-6 text-center">
-            <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-            <p className="mt-2 text-sm text-muted-foreground">
-              Drag and drop your bounty file here, or click to browse
-            </p>
-            <Input
-              type="file"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    promptFile: file.name,
-                  }));
-                }
-              }}
-            />
-          </div>
+          <p className="text-sm font-medium">Upload Bounty File</p>
+          <label htmlFor="file-inp" className="border-2 border-dashed rounded-lg p-6 text-center">
+              {
+                pdf ? (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {formData.promptFile}
+                    </p>
+                ) : (
+                  <>
+                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Drag and drop your bounty file here, or click to browse
+                    </p>
+                  </>
+                )
+              }
+              <Input
+                type="file"
+                className="hidden"
+                id="file-inp"
+                accept=".pdf"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      promptFile: file.name,
+                    }));
+                    setPdf(file);
+                  }
+                }}
+              />
+          </label>
         </div>
 
         <Button
