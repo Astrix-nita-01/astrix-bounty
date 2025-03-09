@@ -82,17 +82,22 @@ This project is developed for a **hackathon**, showcasing a **user-friendly inte
 - **Request Format:**
   ```json
   {
-    "skills": ["Python", "Machine Learning", "NLP"],
-    "jobs": [
-      { "id": 1, "title": "Data Scientist", "required_skills": ["Python", "AI", "Deep Learning"] },
-      { "id": 2, "title": "Software Engineer", "required_skills": ["JavaScript", "React", "Node.js"] }
-    ]
+  "skills": ["Python", "Django", "AI"],
+  "jobs": [
+    {"id": 1, "title": "Django Developer", "required_skills": ["Python", "Django"]},
+    {"id": 2, "title": "React Developer", "required_skills": ["JavaScript", "React"]},
+    {"id": 3, "title": "AI Engineer", "required_skills": ["Python", "AI", "Machine Learning"]}
+  ]
   }
   ```
 - **Response Format:**
   ```json
   {
-    "matched_jobs": [1, 2]
+    "matched_jobs": [
+        3,
+        1,
+        2
+    ]
   }
   ```
 
