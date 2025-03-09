@@ -4,9 +4,13 @@ import { Button } from '@/components/ui/button';
 import React, { useEffect, useState } from 'react';
 import {
   useHiveWallet,
-} from '../../wallet/HIveKeychainAdapter';
+} from '../../../wallet/HIveKeychainAdapter';
 import axios from 'axios';
+import * as dotenv from "dotenv";
+import { useRouter } from 'next/navigation';
 
+
+dotenv.config();
 interface Transaction {
   id: number;
   transactionId: string;
@@ -18,7 +22,9 @@ interface Transaction {
   freelancer: string | null;
 }
 
+
 const Admin: React.FC = () => {
+  const router=useRouter();
   const { signTransaction, isConnected, account, connectWallet } = useHiveWallet();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -44,6 +50,9 @@ const Admin: React.FC = () => {
 
 
   useEffect(() => {
+    if (!localStorage.getItem("adminSecret") && localStorage.getItem("adminSecret")!==process.env.NEXT_PUBLIC_ADMIN_SECRET!) {
+      router.push("/admin/verify")
+    }
     getAllTransactions();
   }, []);
 
