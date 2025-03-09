@@ -6,7 +6,11 @@ const client = new PrismaClient();
 export async function GET(){
 
     try {
-        const allBounties = await client.bounty.findMany();
+        const allBounties = await client.bounty.findMany({
+            where: {
+                status: "pending"
+            }
+        });
 
 
         return NextResponse.json({

@@ -19,6 +19,7 @@ interface ApplicationInterface {
   submittedAt: string;
   bountyId: number;
   coverLetter: string;
+  appliedOn: string;
 }
 
 

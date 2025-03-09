@@ -1,81 +1,93 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { StarIcon } from "lucide-react"
+"use client";
 
-const featuredPrompts = [
-    {
-      id: 1,
-      title: "AI-Powered Resume Builder",
-      description: "Generate professional resumes with AI-driven suggestions, optimized formatting, and ATS compatibility for job seekers.",
-      price: "0.12 ETH",
-      category: "Productivity",
-      rating: 4.9,
-    },
-    {
-      id: 2,
-      title: "E-Commerce Personalization Engine",
-      description: "Boost sales with an AI-driven recommendation system that suggests products based on user behavior and market trends.",
-      price: "0.2 ETH",
-      category: "E-Commerce",
-      rating: 4.8,
-    },
-    {
-      id: 3,
-      title: "AI Code Reviewer",
-      description: "Improve code quality with automatic reviews, security checks, and performance optimizations for cleaner and efficient coding.",
-      price: "0.18 ETH",
-      category: "Programming",
-      rating: 4.7,
-    },
-    {
-      id: 4,
-      title: "Blockchain-Powered Document Verification",
-      description: "Securely verify and authenticate documents using blockchain technology for immutable record-keeping.",
-      price: "0.25 ETH",
-      category: "Blockchain",
-      rating: 4.9,
-    },
-    {
-      id: 5,
-      title: "AI-Based Social Media Content Generator",
-      description: "Generate high-quality social media posts, captions, and hashtags with AI-driven insights and trend analysis.",
-      price: "0.1 ETH",
-      category: "Marketing",
-      rating: 4.8,
-    }
-  ];
-  
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
+
+interface BountyInterface {
+  budget: number
+  category: string
+  description: string
+  id: number
+  postedByUsername: string
+  promptFile: string
+  skillsRequired: string[]
+  title: string
+}
 
 export function FeaturedPrompts() {
+  const router = useRouter();
+
+  const [fetureBounties, setfetureBounties] = useState<BountyInterface[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const getAllBounties = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("/api/bounty/getAll");
+
+      console.log("all bounties: ", response.data);
+      
+      if (response.data.success) {
+        const requiredBounties = response.data.allBounties.slice(0, 8);
+        setfetureBounties(requiredBounties);
+      }
+
+    } catch (error) {
+      console.log("Can not get bounties: ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(()=> {
+    getAllBounties();
+  }, []);
+
   return (
     <section className="py-16 px-6">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-3xl font-bold tracking-tight text-center mb-12">Featured Prompts</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredPrompts.map((prompt) => (
-            <Card key={prompt.id} className="group relative overflow-hidden transition-all hover:shadow-lg">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle>{prompt.title}</CardTitle>
-                    <CardDescription className="mt-2">{prompt.description}</CardDescription>
-                  </div>
-                  <Badge variant="secondary">{prompt.category}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-1 text-yellow-500">
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <span className="text-sm font-medium">{prompt.rating}</span>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-lg font-bold">{prompt.price}</span>
-                <Button className="rounded-full">Buy Now</Button>
-              </CardFooter>
-            </Card>
-          ))}
+          {
+            fetureBounties.length > 0 ? (
+              fetureBounties.map((bounty) => (
+                <Card key={bounty.id} className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="flex justify-between items-start gap-2">
+                      <span>{bounty.title}</span>
+                      <Badge className="flex" variant="secondary">{bounty.category}</Badge>
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {bounty.description.slice(0, 129)}...
+                    </p>
+                  </CardHeader>
+                  <CardFooter className="flex justify-between items-center">
+                    <span className="text-lg font-bold">
+                      {bounty.budget} HIVE
+                    </span>
+                    <Button className="rounded-full" onClick={() => router.push(`/browse/${bounty.id}`)}>
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              isLoading ? (
+                <p className="text-gray-500 text-center col-span-full">
+                  Loading...
+                </p>
+              ) : (
+                <p className="text-gray-500 text-center col-span-full">
+                  No results found.
+                </p>
+              )
+            )
+          }
         </div>
       </div>
     </section>

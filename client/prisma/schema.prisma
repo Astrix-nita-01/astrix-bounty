@@ -18,6 +18,7 @@ model User {
   ratings        Float
   bounties       Bounty[]      @relation("UserBounties")
   applications   Application[]
+  submission     Submission[]
 }
 
 model Bounty {
@@ -27,19 +28,51 @@ model Bounty {
   category         String
   promptFile       String
   budget           Float
+  postedOn         DateTime      @default(now())
   skillsRequired   String[]
+  status           String        @default("pending")
   postedBy         User          @relation("UserBounties", fields: [postedByUsername], references: [username])
   postedByUsername String
   applications     Application[]
+  submissions      Submission[]
+  transaction      Transactions? @relation
 }
 
 model Application {
-  id                Int    @id @default(autoincrement())
+  id                Int          @id @default(autoincrement())
   coverLetter       String
   resume            String
-  status            String @default("pending")
-  bounty            Bounty @relation(fields: [bountyId], references: [id])
+  status            String       @default("pending")
+  bounty            Bounty       @relation(fields: [bountyId], references: [id])
   bountyId          Int
-  applicant         User   @relation(fields: [applicantUsername], references: [username])
+  applicant         User         @relation(fields: [applicantUsername], references: [username])
   applicantUsername String
+  submission        Submission[]
+  appliedOn         DateTime     @default(now())
+}
+
+model Submission {
+  id                Int         @id @default(autoincrement())
+  submissionFile    String
+  submissionDetails String
+  status            String      @default("pending")
+  application       Application @relation(fields: [applicationId], references: [id])
+  applicationId     Int
+  bounty            Bounty      @relation(fields: [bountyId], references: [id])
+  bountyId          Int
+  applicant         User        @relation(fields: [applicantUsername], references: [username])
+  applicantUsername String
+  submittedOn       DateTime    @default(now())
+}
+
+model Transactions {
+  id            Int      @id @default(autoincrement())
+  transactionId String
+  From          String
+  amount        Float
+  timestamp     DateTime @default(now())
+  bounty        Bounty   @relation(fields: [bountyId], references: [id])
+  bountyId      Int      @unique
+  bountyStatus  String   @default("pending")
+  freelancer    String?
 }

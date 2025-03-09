@@ -12,11 +12,11 @@ interface ApplicationInterface {
   id: number;
   applicantUsername: string;
   resume: string;
-  status: "pending" | "accepted" | "rejected";
+  status: 'pending' | 'accepted' | 'rejected';
   rating: number;
-  submittedAt: string;
   bountyId: number;
   coverLetter: string;
+  appliedOn: string;
 }
 
 interface UserDetailsInterface {
@@ -131,7 +131,7 @@ function Application({ application, updateApplicationStatus }: { application: Ap
             <div>
               <span className="text-sm text-muted-foreground">Submitted</span>
               <p className="font-semibold">
-                {new Date(application.submittedAt).toLocaleDateString()}
+                {new Date(application.appliedOn).toLocaleDateString()}
               </p>
             </div>
           </div>

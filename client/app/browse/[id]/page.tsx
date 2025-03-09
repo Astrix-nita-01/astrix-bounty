@@ -18,13 +18,27 @@ interface BountyInterface {
   promptFile: string;
   skillsRequired: string[];
   title: string;
+  postedOn: string;
+}
+
+interface ApplicationInterface {
+  id: number;
+  applicantUsername: string;
+  resume: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  rating: number;
+  submittedAt: string;
+  bountyId: number;
+  coverLetter: string;
+  appliedOn: string;
 }
 
 export default function BountyDetails() {
-  const { account, connectWallet } = useHiveWallet();
+  const { account, connectWallet, isConnected } = useHiveWallet();
   const { id } = useParams();
 
   const [bounty, setBounty] = useState<BountyInterface | null>(null);
+  const [isAppliedByUser, setIsAppliedByUser] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingApply, setIsLoadingApply] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -32,7 +46,12 @@ export default function BountyDetails() {
 
   const getBountyById = async () => {
     if (!id) return console.log("page id not found");
-    console.log(id);
+
+    if (!isConnected || !account) {
+      alert("Please connect your wallet first");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await axios.post(`/api/bounty/getbyid`, {
@@ -42,6 +61,29 @@ export default function BountyDetails() {
       console.log("bounty: ", response.data);
       if (response.data.success) {
         setBounty(response.data.bounty);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Can not get bounties: ", error);
+      setIsLoading(false);
+    }
+  };
+
+  const getApplicationsByUser = async () => {
+    if (!id) return console.log("page id not found");
+    
+    if (!isConnected || !account) {
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/api/application/getAppliedbyuser`, {
+        username: account,
+      });
+
+      console.log("applications by user: ", response.data);
+      if (response.data.success) {
+        setIsAppliedByUser(response.data.applicationsByUser.filter((application: ApplicationInterface) => application.bountyId.toString() === id[0]).length > 0)
       }
       setIsLoading(false);
     } catch (error) {
@@ -96,7 +138,8 @@ export default function BountyDetails() {
 
   useEffect(() => {
     getBountyById();
-  }, []);
+    getApplicationsByUser();
+  }, [account]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -156,7 +199,7 @@ export default function BountyDetails() {
                   <Button
                     className="w-full"
                     onClick={() => setIsOpen(true)}
-                    disabled={bounty.postedByUsername === account}
+                    disabled={bounty.postedByUsername === account ||isAppliedByUser}
                   >
                     Apply Now
                   </Button>

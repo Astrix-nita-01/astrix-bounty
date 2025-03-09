@@ -8,7 +8,7 @@ export async function POST(req: NextRequest){
 
     try {
         console.log("body: ", body);
-        const { username, title, description, category, promptFile, budget, skillsRequired } = body;
+        const { username, title, description, category, promptFile, budget, skillsRequired, transactionId } = body;
 
         // check if user exists
         const user = await client.user.findUnique({ where: { username } });
@@ -32,9 +32,19 @@ export async function POST(req: NextRequest){
             }
         });
 
+        const transaction = await client.transactions.create({
+            data: {
+                From: username,
+                amount: budget,
+                bountyId: bounty.id,
+                transactionId: transactionId,
+            }
+        });
+
         return NextResponse.json({
             success: true,
-            bounty: bounty
+            bounty: bounty,
+            transaction: transaction
         });
     } catch (error) {
         return NextResponse.json({

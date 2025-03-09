@@ -22,6 +22,7 @@ interface BountyInterface {
   promptFile: string;
   skillsRequired: string[];
   title: string;
+  postedOn: string;
 }
 
 // Mock data - replace with actual API call
@@ -67,6 +68,7 @@ interface BountyInterface {
   promptFile: string;
   skillsRequired: string[];
   title: string;
+  postedOn: string;
 }
 
 export default function UserBounties() {

@@ -13,7 +13,8 @@ import {
   SelectValue,
 } from "@radix-ui/react-select";
 import { Button } from "@/components/ui/button";
-import { Badge, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function SellPage() {
   const { isConnected, account, signTransaction } = useHiveWallet();
@@ -79,10 +80,13 @@ export default function SellPage() {
 
       console.log("Initiating real transaction:", operation);
       const result = await signTransaction(operation, "Active");
-      console.log("Transaction successful:", result);
-      setShowPaymentOverlay(false);
-      //   alert(`Payment of ${formData.budget.toString()} HIVE to cyph37 completed successfully!`);
-      handlePost();
+
+      if(result.success){
+        console.log("Transaction successful:", result);
+        setShowPaymentOverlay(false);
+        //   alert(`Payment of ${formData.budget.toString()} HIVE to cyph37 completed successfully!`);
+        handlePost(result.result.id);
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         console.error("Transaction failed:", err.message);
@@ -95,7 +99,7 @@ export default function SellPage() {
     
   };
 
-  const handlePost = async () => {
+  const handlePost = async (transactionId: string) => {
     try {
       setIsLoading(true);
 
@@ -107,6 +111,7 @@ export default function SellPage() {
         promptFile: formData.promptFile,
         budget: formData.budget,
         skillsRequired: formData.skillsRequired,
+        transactionId: transactionId,
       };
 
       const response = await axios.post("/api/bounty/create", payload);
