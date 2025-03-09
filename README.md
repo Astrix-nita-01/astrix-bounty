@@ -5,8 +5,6 @@ Astrix-Bounty is a decentralized service marketplace built with **Next.js** and 
 
 This project is developed for a **hackathon**, showcasing a **user-friendly interface** with **real-time transactions and AI-powered job matching**.
 
----
-
 ## **Features**
 ### **Astrix-Bounty**
 - **Service Submission**: Users can list services (e.g., creative writing, NFT creation, music, digital art) on the `/sell` page.
