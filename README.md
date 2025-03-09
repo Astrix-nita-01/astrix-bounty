@@ -1,72 +1,118 @@
-# Astrix-Bounty
+# **ASTRIX BOUNTY  X  INTELLIMATCH : Blockchain Meets AI for Smarter Opportunities**
 
-Astrix-Bounty is a decentralized platform built with Next.js that enables users to sell services (e.g., creative writing, NFT creation, music, digital art) and manage transactions using the Hive blockchain. The platform integrates with the Hive Keychain extension to facilitate secure wallet connections and cryptocurrency payments (HIVE). This project is designed for a hackathon, showcasing a user-friendly interface for service submission with real-time transaction capabilities.
+Astrix-Bounty is a decentralized service marketplace built with **Next.js** and integrated with the **Hive blockchain** for secure payments. Additionally, our project includes an **AI-powered job matching system** using **Flask** and **Sentence Transformers**, enabling intelligent job recommendations based on **semantic similarity**.
 
-## Features
-- **Service Submission**: Users can submit services with a title, description, category, and price on the `/sell` page.
-- **Hive Wallet Integration**: Connects to Hive Keychain for wallet authentication and transaction signing.
-- **Transaction Payment**: Allows users to pay 1.000 HIVE to the `platform` address to submit a service, with Hive Keychain approval.
-- **Navigation**: Includes links to Browse, Hire (/sell), Review (/governance), and Profile pages, styled with a dark theme and purple connect button.
+This project is developed for a **hackathon**, showcasing a **user-friendly interface** with **real-time transactions and AI-powered job matching**.
 
-## Prerequisites
-- **Node.js**: Version 14.x or higher.
-- **npm**: Version 6.x or higher (comes with Node.js).
-- **Hive Keychain Extension**: Installed in your browser (e.g., Chrome or Firefox) and logged into a Hive account with sufficient HIVE (at least 1 HIVE for testing transactions).
-- **Code Editor**: e.g., VS Code.
+---
 
-## Installation
+## **Features**
+### **Astrix-Bounty**
+- **Service Submission**: Users can list services (e.g., creative writing, NFT creation, music, digital art) on the `/sell` page.
+- **Hive Wallet Integration**: Uses Hive Keychain for wallet authentication and transaction signing.
+- **Transaction Payment**: Payments are processed in **HIVE cryptocurrency**.
+- **Navigation**: Browse, Hire (/sell), Review (/governance), and Profile pages with a **dark theme UI**.
 
-### Step 1: Clone the Repository
-```
-git clone <your-repo-url>
-cd astrix-bounty
-```
+### **Job Matcher API**
+- **AI-Powered Job Matching**: Uses **NLP & deep learning** to match users' skills with job descriptions.
+- **Fast & Efficient**: Implements **Sentence Transformers (`all-MiniLM-L6-v2`)** for **semantic similarity** calculations.
+- **API-Based**: Returns **relevant job matches** via a REST API.
+- **Real-time Processing**: Scalable and lightweight for instant job recommendations.
 
-### Step 2: Install Dependencies
-Run the following command to install the required Node.js packages:
-```
-npm install
-```
+---
 
-### Step 3: Set Up Environment
-No environment variables are required for this project. However, ensure your Hive Keychain is configured with a test account that has HIVE for transaction testing.
+## **Prerequisites**
+### **Astrix-Bounty**
+- **Node.js**: 14.x or higher
+- **npm**: 6.x or higher
+- **Hive Keychain Extension**: Installed & configured with a Hive account.
+- **Code Editor**: e.g., VS Code
 
-### Step 4: Run the Development Server
-Start the Next.js development server with:
+### **Job Matcher API**
+- **Python 3.8+**
+- **pip** (Python Package Manager)
 
-```
-npm run dev
-```
+---
 
-Open your browser and navigate to http://localhost:3000. The app should be running, and you’ll see the navigation bar and the default page.
+## **Installation**
+### **Astrix-Bounty (Next.js)**
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/Astrix-nita-01/astrix-bounty.git
+   cd astrix-bounty
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Start the development server:
+   ```sh
+   npm run dev
+   ```
+4. Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-### Step 5: Connect Hive Wallet
+### **Job Matcher API (Flask)**
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-repo/job-matcher.git
+   cd job-matcher
+   ```
+2. Create a virtual environment:
+   ```sh
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+3. Install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+4. Run the Flask API:
+   ```sh
+   python run.py
+   ```
+   The API will be available at **`http://127.0.0.1:5000`**.
 
-- Install the Hive Keychain extension if not already installed.
-- Log into Hive Keychain with a Hive account that has at least 1 HIVE.
-- Click the "Connect Hive Wallet" button in the navigation bar to connect your wallet. The button will change to show your username (e.g., "Connected as: <username>").
+---
 
-### Step 6: Test the Sell Page
-- Navigate to http://localhost:3000/sell.
-- Fill out the form with a title, description, category, and price.
-- Click "Pay and Submit" to open the payment overlay.
-- Click "Pay 1.000 HIVE" to initiate a transaction. Approve the transaction in the Hive Keychain popup.
-- If successful, you’ll see an alert confirming the payment, and the overlay will close.
+## **API Endpoints (Job Matcher API)**
+### **Job Matching Endpoint**
+- **URL:** `/match_jobs`
+- **Method:** `POST`
+- **Request Format:**
+  ```json
+  {
+    "skills": ["Python", "Machine Learning", "NLP"],
+    "jobs": [
+      { "id": 1, "title": "Data Scientist", "required_skills": ["Python", "AI", "Deep Learning"] },
+      { "id": 2, "title": "Software Engineer", "required_skills": ["JavaScript", "React", "Node.js"] }
+    ]
+  }
+  ```
+- **Response Format:**
+  ```json
+  {
+    "matched_jobs": [1, 2]
+  }
+  ```
 
-### Step 7: Explore Navigation
-- Click "Hire" to navigate to the /sell page.
-- Click "Review" to navigate to the /governance page.
-- Use "Browse" and "Profile" to explore other pages (note: these may be placeholders unless implemented).
+---
 
-### Technologies Used
-- Next.js: React framework for server-side rendering and static site generation.
-- TypeScript: For type safety in the codebase.
-- Tailwind CSS: For responsive and customizable styling.
-- Hive SDK (@hiveio/dhive): For interacting with the Hive blockchain.
-- Hive Keychain: Browser extension for wallet management and transaction signing.
-- Tailwind CSS: For responsive and customizable styling.
-- Hive SDK (@hiveio/dhive): For interacting with the Hive blockchain.
-- Hive Keychain: Browser extension for wallet management and transaction signing.
+## **Technologies Used**
+### **Astrix-Bounty**
+- **Next.js**: React framework for SSR and static site generation.
+- **TypeScript**: Ensures type safety.
+- **Tailwind CSS**: Responsive styling.
+- **Hive SDK (`@hiveio/dhive`)**: Blockchain interactions.
+- **Hive Keychain**: Secure wallet management.
 
-### Contributing
-This is a hackathon project, but contributions are welcome! Please fork the repository, create a feature branch, and submit a pull request.
+### **Job Matcher API**
+- **Flask**: Lightweight Python web framework.
+- **Sentence Transformers (`all-MiniLM-L6-v2`)**: AI model for semantic similarity.
+- **PyTorch**: Deep learning framework.
+- **dotenv**: Manages environment variables.
+
+---
+
+
+💙 Thanks to **Flask**, **Next.js**, **Hive**, **Hugging Face**, and the **hackathon team** for making this project possible!
+
