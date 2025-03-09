@@ -1,4 +1,5 @@
-# **ASTRIX BOUNTY  ✦  INTELLIMATCH | Blockchain Meets AI for Smarter Opportunities**
+# **ASTRIX BOUNTY  ✦  INTELLIMATCH | BLOCKCHIAN MEETS AI**
+
 
 Astrix-Bounty is a decentralized service marketplace built with **Next.js** and integrated with the **Hive blockchain** for secure payments. Additionally, our project includes an **AI-powered job matching system** using **Flask** and **Sentence Transformers**, enabling intelligent job recommendations based on **semantic similarity**.
 
