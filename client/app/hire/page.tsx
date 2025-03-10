@@ -187,25 +187,45 @@ export default function SellPage() {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Category</label>
-          <Select
-            value={formData.category}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, category: value }))
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="creative">Creative Writing</SelectItem>
-              <SelectItem value="coding">Coding</SelectItem>
-              <SelectItem value="marketing">Marketing</SelectItem>
-              <SelectItem value="business">Business</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <div className="space-y-3">
+  <label className="text-sm font-semibold text-gray-700">Category</label>
+  <div className="relative">
+    <select
+      value={formData.category}
+      onChange={(e) =>
+        setFormData((prev) => ({ ...prev, category: e.target.value }))
+      }
+      className="w-full border-2 border-gray-500 py-2"
+    >
+      <option className="w-full" value="">Select a category</option>
+      <option className="w-full" value="Creative Writing">Creative Writing</option>
+      <option className="w-full" value="Coding">Coding</option>
+      <option className="w-full" value="Digital Marketing">Digital Marketing</option>
+      <option className="w-full" value="Design">Design</option>
+      <option className="w-full" value="Web Development">Web Development</option>
+      <option className="w-full" value="UI/UX">UI/UX</option>
+      <option className="w-full" value="AI/ML">AI/ML</option>
+      {/* <SelectTrigger className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 bg-white">
+        <SelectValue placeholder="Select category" />
+      </SelectTrigger> */}
+      {/* <SelectContent className="bg-white z-50 shadow-lg w-full rounded-lg p-3 border">
+        <SelectItem value="creative" className="hover:bg-gray-100 px-3 py-2 rounded-md">
+          Creative Writing
+        </SelectItem>
+        <SelectItem value="coding" className="hover:bg-gray-100 px-3 py-2 rounded-md">
+          Coding
+        </SelectItem>
+        <SelectItem value="marketing" className="hover:bg-gray-100 px-3 py-2 rounded-md">
+          Digital Marketing
+        </SelectItem>
+        <SelectItem value="business" className="hover:bg-gray-100 px-3 py-2 rounded-md">
+          Design
+        </SelectItem>
+      </SelectContent> */}
+    </select>
+  </div>
+</div>
+
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Required Skills</label>
@@ -255,7 +275,7 @@ export default function SellPage() {
 
         <div className="space-y-2">
           <p className="text-sm font-medium">Upload Bounty File</p>
-          <label htmlFor="file-inp" className="border-2 border-dashed rounded-lg p-6 text-center">
+          <label htmlFor="file-inp" className="border-2 border-dashed rounded-lg p-6 h-full text-center">
               {
                 pdf ? (
                     <p className="mt-2 text-sm text-muted-foreground">
@@ -292,7 +312,7 @@ export default function SellPage() {
         <Button
           type="submit"
           disabled={!isConnected || isLoading}
-          className={`px-4 py-2 rounded-md text-white ${
+          className={`px-4 w-full py-2 rounded-md text-white ${
             isConnected
               ? "bg-blue-600 hover:bg-blue-700"
               : "bg-gray-400 cursor-not-allowed"
