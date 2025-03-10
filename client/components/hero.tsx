@@ -21,7 +21,7 @@ export function Hero() {
               🚀 Find Work
               </Button>
             </Link>
-            <Link href="/sell">
+            <Link href="/hire">
               <Button size="lg" variant="outline" className="rounded-full">
               🤝 Hire Talent
               </Button>

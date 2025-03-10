@@ -12,7 +12,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/about"
+                  href="#"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   About Us
@@ -20,7 +20,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/team"
+                  href="#"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Team
@@ -28,7 +28,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/careers"
+                  href="#"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Careers
@@ -41,7 +41,8 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/docs"
+                  href="https://github.com/Astrix-nita-01/astrix-bounty/blob/main/README.md"
+                  target="_blank"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Documentation
@@ -49,7 +50,8 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/blog"
+                target="_blank"
+                  href="https://ecency.com/freelancing/@raghu28/astrix-bounty"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Blog
@@ -57,13 +59,13 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/support"
+                  href="#"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Support
                 </Link>
                 <Link
-                  href="/admin"
+                  href="/admin/verify"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Admin
