@@ -119,8 +119,8 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
       console.log("Hive Keychain detected, requesting sign buffer");
       const response = await new Promise<any>((resolve) => {
         const timeout = setTimeout(() => {
-          resolve({ success: false, error: 'Connection timed out after 5 seconds' });
-        }, 5000);
+          resolve({ success: false, error: 'Connection timed out after 5 minutes' });
+        }, 300000);
 
         window.hive_keychain!.requestSignBuffer(
           null,
@@ -243,6 +243,7 @@ export const HiveWalletProvider: React.FC<HiveWalletProviderProps> = ({ children
       }
     });
   }, [isConnected, account, checkHiveKeychain]);
+  
 
   return (
     <HiveWalletContext.Provider
