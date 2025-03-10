@@ -115,23 +115,23 @@ export default function ProfilePage() {
 
       let image_url = '';
             
-      const formDataForFile = new FormData();
       if(image) {
+        const formDataForFile = new FormData();
         formDataForFile.append('file', image);
-      }
 
-      const uploadImageRes = await uploadImage(formDataForFile);
-      const uploadImageResObj = JSON.parse(uploadImageRes);
+        const uploadImageRes = await uploadImage(formDataForFile);
+        const uploadImageResObj = JSON.parse(uploadImageRes);
 
-      if(!uploadImageResObj.success){
-          return console.log("error uploading image: ", uploadImageResObj.error);
+        if(!uploadImageResObj.success){
+            return console.log("error uploading image: ", uploadImageResObj.error);
+        }
+        
+        image_url = uploadImageResObj.imageURL;
       }
-      
-      image_url = uploadImageResObj.imageURL;
 
       const payload = {
         username: account,
-        profilePicture: image_url,
+        profilePicture: image_url === "" ? profile.profilePicture : image_url,
         skills: profile.skills,
         projects: profile.projects,
         resume: profile.resume,

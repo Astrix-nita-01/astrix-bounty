@@ -133,8 +133,8 @@ export default function BrowsePage() {
               console.log("user is not there");
             } else {
               console.log("env: ", process.env.NEXT_PUBLIC_MODEL_URL);
-              const res = await axios.post(process.env.NEXT_PUBLIC_MODEL_URL, {
-                skills: userDetails.skills,
+              const payload = {
+                skills: userDetails.skills || [],
                 jobs: response.data.allBounties.map((bounty: BountyInterface) => {
                   return {
                     id: bounty.id,
@@ -142,7 +142,10 @@ export default function BrowsePage() {
                     required_skills: bounty.skillsRequired,
                   }
                 })
-              });
+              }
+
+              console.log("AI model payload: ", payload);
+              const res = await axios.post(process.env.NEXT_PUBLIC_MODEL_URL, payload);
     
               console.log("AI recommended job: ", res.data);
 
@@ -174,6 +177,10 @@ export default function BrowsePage() {
   useEffect(() => {
     getUserDetails();
   }, [account]);
+  
+  useEffect(() => {
+    getUserDetails();
+  }, []);
 
   useEffect(() => {
     getAllBounties()
